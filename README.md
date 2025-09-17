@@ -1,5 +1,3 @@
-<img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/c2c26ae8-0bb7-400b-abe1-bca846d77f9c" />
-<br/>
 # Metasys Alarm Viewer (MAV)
 
 ## 📌 Sobre a aplicação
