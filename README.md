@@ -20,7 +20,7 @@ A aplicação foi otimizada com:
 - **Persistência local** → comentários e configurações de colunas salvos no `localStorage`  
 
 ---
-
+![alt text](image.png)
 ## 🏗️ Arquitetura
 src/
 ├─ alarms/ → Componente principal (UI)
