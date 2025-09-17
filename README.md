@@ -42,6 +42,8 @@ src/
 ## 🚀 Como executar em outro PC
 
 ### 🔹 Pré-requisitos
+
+- Toda documentação de como ocorre a interação da API, pode ser acessada pelo link: https://jci-metasys.github.io/api-landing/
 - [Node.js](https://nodejs.org/) (versão 18 ou superior recomendada)  
 - [npm](https://www.npmjs.com/) (instalado junto com o Node)
 
