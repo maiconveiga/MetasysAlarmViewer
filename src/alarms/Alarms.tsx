@@ -180,36 +180,36 @@ function PieChart({ data, title, size=220, thickness=0 }: { data: PieDatum[]; ti
 }
 
 /* ===== Componente ===== */
-function PrioritySlider({ min, max, onMin, onMax }: Props) {
-  return (
-    <div className="toolbar-item priority-range">
-      <label className="priority-title">Prioridade</label>
-      <div className="range-row">
-        <input
-          type="range"
-          min={1}
-          max={4}
-          step={1}
-          value={min}
-          onChange={(e) => onMin(Math.min(Number(e.target.value), max))}
-        />
-        <input
-          type="range"
-          min={1}
-          max={4}
-          step={1}
-          value={max}
-          onChange={(e) => onMax(Math.max(Number(e.target.value), min))}
-        />
-      </div>
-      <div className="range-labels">
-        <span>{labelsByRank[min]}</span>
-        <span>–</span>
-        <span>{labelsByRank[max]}</span>
-      </div>
-    </div>
-  )
-}
+// function PrioritySlider({ min, max, onMin, onMax }: Props) {
+//   return (
+//     <div className="toolbar-item priority-range">
+//       <label className="priority-title">Prioridade</label>
+//       <div className="range-row">
+//         <input
+//           type="range"
+//           min={1}
+//           max={4}
+//           step={1}
+//           value={min}
+//           onChange={(e) => onMin(Math.min(Number(e.target.value), max))}
+//         />
+//         <input
+//           type="range"
+//           min={1}
+//           max={4}
+//           step={1}
+//           value={max}
+//           onChange={(e) => onMax(Math.max(Number(e.target.value), min))}
+//         />
+//       </div>
+//       <div className="range-labels">
+//         <span>{labelsByRank[min]}</span>
+//         <span>–</span>
+//         <span>{labelsByRank[max]}</span>
+//       </div>
+//     </div>
+//   )
+// }
 
 
 export default function Alarms() {
@@ -285,15 +285,15 @@ export default function Alarms() {
     });
     setDraftComment(""); // limpa e mantém modal aberto
   }, [activeId, draftComment, statuses]);
-const saveNoteModal = useCallback(() => {
-    if (!activeId) return;
-    const id = activeId;
-    setComments(prev => { const n={...prev,[id]:draftComment}; return n; });
-    saveComment(id, draftComment);
-    setStatuses(prev => { const n={...prev,[id]:draftStatus}; return n; });
-    saveStatus(id, draftStatus);
-    setShowNoteModal(false);
-  }, [activeId, draftComment, draftStatus]);
+// const saveNoteModal = useCallback(() => {
+//     if (!activeId) return;
+//     const id = activeId;
+//     setComments(prev => { const n={...prev,[id]:draftComment}; return n; });
+//     saveComment(id, draftComment);
+//     setStatuses(prev => { const n={...prev,[id]:draftStatus}; return n; });
+//     saveStatus(id, draftStatus);
+//     setShowNoteModal(false);
+//   }, [activeId, draftComment, draftStatus]);
 
 
   // Toolbar retrátil — agora com switch On/Off
@@ -630,8 +630,8 @@ const saveNoteModal = useCallback(() => {
               </thead>
               <tbody>
                 {sorted.map(r => {
-                  const hasComment = (comments[r.id] ?? "").trim().length > 0;
-                  const isOld = Date.now() - r.dateTimeAdjMs > TWO_HOURS_MS;
+                  // const hasComment = (comments[r.id] ?? "").trim().length > 0;
+                  // const isOld = Date.now() - r.dateTimeAdjMs > TWO_HOURS_MS;
                   const status = computedStatus(r);
                   const rowStyle: React.CSSProperties = status === "concluido" ? { backgroundColor: "#e7fbe7" } : status === "tratado" ? { backgroundColor: "#fff9c4" } : (Date.now() - r.dateTimeAdjMs > TWO_HOURS_MS ? { backgroundColor: "#ffd6d6" } : {});
                   return (
