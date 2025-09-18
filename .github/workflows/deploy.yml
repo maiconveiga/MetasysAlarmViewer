@@ -2,8 +2,7 @@ name: Build & Deploy to Local VM
 
 on:
   push:
-    branches: [ "main" ]  # ajuste caso sua branch principal seja outra
-
+    branches: [ "main" ]  
 jobs:
   build-deploy:
     runs-on: self-hosted   # roda no runner da sua VM
