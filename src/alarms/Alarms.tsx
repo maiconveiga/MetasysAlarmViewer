@@ -79,7 +79,7 @@ const loadBackends = (): BackendCfg[] => {
 };
 const saveBackends = (list: BackendCfg[]) => { try { localStorage.setItem(BACKENDS_KEY, JSON.stringify(list)); } catch {} };
 const loadComment = (id: string) => { try { return localStorage.getItem(COMMENT_KEY(id)) ?? ""; } catch { return ""; } };
-const saveComment = (id: string, text: string) => { try { localStorage.setItem(COMMENT_KEY(id), text); } catch {} };
+// const saveComment = (id: string, text: string) => { try { localStorage.setItem(COMMENT_KEY(id), text); } catch {} };
 
 type VisibleCols = {
   server: boolean; dateTime: boolean; site: boolean; point: boolean; value: boolean;
@@ -234,7 +234,7 @@ export default function Alarms() {
   type AlarmStatus = "nao_tratado" | "tratado" | "concluido" | "oportunidade";
   const STATUS_KEY = (id: string) => `alarm_status_${id}`;
   const loadStatus = (id: string): AlarmStatus => { try { return (localStorage.getItem(STATUS_KEY(id)) as AlarmStatus) || "nao_tratado"; } catch { return "nao_tratado"; } };
-  const saveStatus = (id: string, s: AlarmStatus) => { try { localStorage.setItem(STATUS_KEY(id), s); } catch {} };
+  // const saveStatus = (id: string, s: AlarmStatus) => { try { localStorage.setItem(STATUS_KEY(id), s); } catch {} };
   const [statuses, setStatuses] = useState<Record<string, AlarmStatus>>({});
   // Deriva status "ao vivo": reconhecido/descartado => concluido; senão, estado salvo
   const computedStatus = (r: Row): AlarmStatus => {
@@ -666,7 +666,7 @@ export default function Alarms() {
             <div className="cards-scroll">
               <div className="cards-grid">
                 {sorted.map(r => {
-                  const hasComment = (comments[r.id] ?? "").trim().length > 0;
+                  // const hasComment = (comments[r.id] ?? "").trim().length > 0;
                   const isOld = Date.now() - r.dateTimeAdjMs > TWO_HOURS_MS;
                   const status = computedStatus(r);
                   const cardClass = ["alarm-card","clickable", isOld ? "old" : "", status === "tratado" ? "status-tratado" : "", status === "concluido" ? "status-concluido" : "", status === "oportunidade" ? "status-oportunidade" : ""].join(" ").trim();
