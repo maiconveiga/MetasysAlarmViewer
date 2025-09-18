@@ -1,49 +1,19 @@
-name: Build & Deploy to Local VM
+- name: Build
+  run: npm run build
 
-on:
-  push:
-    branches: [ "main" ]  
-jobs:
-  build-deploy:
-    runs-on: self-hosted   # roda no runner da sua VM
-    steps:
-      - name: Check out
-        uses: actions/checkout@v4
+- name: Deploy to Nginx (atomic)
+  run: |
+    set -euo pipefail
+    [ -d dist ] && [ -f dist/index.html ] || { echo "dist/ não encontrado"; exit 1; }
 
-      - name: Use Node 20
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "npm"
+    RELEASE="/var/www/app/releases/${GITHUB_SHA}"
+    sudo mkdir -p "$RELEASE"
+    # -a mantém timestamps/links; não usa sudo no workspace
+    sudo cp -a dist/. "$RELEASE/"
 
-      - name: Install deps
-        run: |
-          npm ci || npm install
+    # apontar 'current' e ajustar permissões SOMENTE no /var/www
+    sudo ln -sfn "$RELEASE" /var/www/app/current
+    sudo chown -R www-data:www-data /var/www/app
 
-      - name: Build
-        # Se precisar de variáveis (ex.: VITE_API_URL), injete aqui:
-        # run: VITE_API_URL=${{ vars.VITE_API_URL }} npm run build
-        run: npm run build
-
-      - name: Deploy to Nginx folder (atomic symlink)
-        run: |
-          set -euo pipefail
-          RELEASE="/var/www/app/releases/${GITHUB_SHA}"
-          sudo mkdir -p "$RELEASE"
-
-          # Vite => dist ; CRA => build (cobre os dois)
-          if [ -d "dist" ]; then
-            sudo cp -r dist/* "$RELEASE"/
-          elif [ -d "build" ]; then
-            sudo cp -r build/* "$RELEASE"/
-          else
-            echo "Nenhum diretório de build encontrado (dist/ ou build/)."
-            exit 1
-          fi
-
-          # troca atômica do symlink
-          sudo ln -sfn "$RELEASE" /var/www/app/current
-          sudo chown -R www-data:www-data /var/www/app
-
-      - name: Reload Nginx
-        run: sudo systemctl reload nginx
+    sudo nginx -t
+    sudo systemctl reload nginx
