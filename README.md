@@ -50,3 +50,4 @@ src/
    ```bash
    git clone https://github.com/maiconveiga/MetasysAlarmViewer.git
    cd MAV
+### pm2 start "npm run dev -- --host 0.0.0.0" --name MAV
