@@ -1,0 +1,50 @@
+name: Build & Deploy to Local VM
+
+on:
+  push:
+    branches: [ "main" ]  # ajuste caso sua branch principal seja outra
+
+jobs:
+  build-deploy:
+    runs-on: self-hosted   # roda no runner da sua VM
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Use Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install deps
+        run: |
+          npm ci || npm install
+
+      - name: Build
+        # Se precisar de variáveis (ex.: VITE_API_URL), injete aqui:
+        # run: VITE_API_URL=${{ vars.VITE_API_URL }} npm run build
+        run: npm run build
+
+      - name: Deploy to Nginx folder (atomic symlink)
+        run: |
+          set -euo pipefail
+          RELEASE="/var/www/app/releases/${GITHUB_SHA}"
+          sudo mkdir -p "$RELEASE"
+
+          # Vite => dist ; CRA => build (cobre os dois)
+          if [ -d "dist" ]; then
+            sudo cp -r dist/* "$RELEASE"/
+          elif [ -d "build" ]; then
+            sudo cp -r build/* "$RELEASE"/
+          else
+            echo "Nenhum diretório de build encontrado (dist/ ou build/)."
+            exit 1
+          fi
+
+          # troca atômica do symlink
+          sudo ln -sfn "$RELEASE" /var/www/app/current
+          sudo chown -R www-data:www-data /var/www/app
+
+      - name: Reload Nginx
+        run: sudo systemctl reload nginx
