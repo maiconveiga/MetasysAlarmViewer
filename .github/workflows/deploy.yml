@@ -1,13 +1,55 @@
-# .github/workflows/deploy.yml
+# # .github/workflows/deploy.yml
+# name: Build & Deploy to Local VM
+
+# on:
+#   push:
+#     branches: [ "main" ]  # ajuste se a sua branch principal tem outro nome
+
+# jobs:
+#   build-deploy:
+#     runs-on: self-hosted   # <— roda no runner da sua VM
+#     steps:
+#       - name: Check out
+#         uses: actions/checkout@v4
+
+#       - name: Use Node 20
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: '20'
+#           cache: 'npm'
+
+#       - name: Install deps
+#         run: npm ci
+
+#       - name: Build
+#         run: npm run build
+
+#       # Copia o build para /var/www/app/releases/<sha> e troca symlink
+#       - name: Deploy to Nginx folder
+#         run: |
+#           set -e
+#           RELEASE=/var/www/app/releases/${GITHUB_SHA}
+#           sudo mkdir -p "$RELEASE"
+#           sudo cp -r ./dist/* "$RELEASE"/ || sudo cp -r ./build/* "$RELEASE"/ || true
+#           # SPA típicas: Vite => dist, CRA => build. O comando acima cobre ambos.
+
+#           # Symlink atômico
+#           sudo ln -sfn "$RELEASE" /var/www/app/current
+
+#           # Permissões (opcional)
+#           sudo chown -R www-data:www-data /var/www/app
+
+#       - name: Reload Nginx
+#         run: sudo systemctl reload nginx
 name: Build & Deploy to Local VM
 
 on:
   push:
-    branches: [ "main" ]  # ajuste se a sua branch principal tem outro nome
+    branches: [ "main" ]   # troque se sua branch principal for outra
 
 jobs:
   build-deploy:
-    runs-on: self-hosted   # <— roda no runner da sua VM
+    runs-on: self-hosted   # seu runner na VM
     steps:
       - name: Check out
         uses: actions/checkout@v4
@@ -15,29 +57,31 @@ jobs:
       - name: Use Node 20
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install deps
-        run: npm ci
+        run: npm ci || npm install
 
-      - name: Build
+      - name: Build (Vite)
+        # Se usar variáveis VITE_*, injete aqui. Ex: VITE_API_URL=${{ vars.VITE_API_URL }} npm run build
         run: npm run build
 
-      # Copia o build para /var/www/app/releases/<sha> e troca symlink
-      - name: Deploy to Nginx folder
+      - name: Deploy to Nginx (atomic symlink)
         run: |
-          set -e
-          RELEASE=/var/www/app/releases/${GITHUB_SHA}
+          set -euo pipefail
+          [ -d dist ] && [ -f dist/index.html ] || { echo "dist/ não encontrado"; exit 1; }
+
+          RELEASE="/var/www/app/releases/${GITHUB_SHA}"
           sudo mkdir -p "$RELEASE"
-          sudo cp -r ./dist/* "$RELEASE"/ || sudo cp -r ./build/* "$RELEASE"/ || true
-          # SPA típicas: Vite => dist, CRA => build. O comando acima cobre ambos.
+          sudo cp -a dist/. "$RELEASE/"
 
-          # Symlink atômico
           sudo ln -sfn "$RELEASE" /var/www/app/current
-
-          # Permissões (opcional)
           sudo chown -R www-data:www-data /var/www/app
 
-      - name: Reload Nginx
-        run: sudo systemctl reload nginx
+          # garantir que o site correto está ativo
+          sudo ln -sfn /etc/nginx/sites-available/reactapp /etc/nginx/sites-enabled/reactapp
+          sudo rm -f /etc/nginx/sites-enabled/default
+
+          sudo nginx -t
+          sudo systemctl reload nginx
