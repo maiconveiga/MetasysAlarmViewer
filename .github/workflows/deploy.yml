@@ -1,19 +1,43 @@
-- name: Build
-  run: npm run build
+# .github/workflows/deploy.yml
+name: Build & Deploy to Local VM
 
-- name: Deploy to Nginx (atomic)
-  run: |
-    set -euo pipefail
-    [ -d dist ] && [ -f dist/index.html ] || { echo "dist/ não encontrado"; exit 1; }
+on:
+  push:
+    branches: [ "main" ]  # ajuste se a sua branch principal tem outro nome
 
-    RELEASE="/var/www/app/releases/${GITHUB_SHA}"
-    sudo mkdir -p "$RELEASE"
-    # -a mantém timestamps/links; não usa sudo no workspace
-    sudo cp -a dist/. "$RELEASE/"
+jobs:
+  build-deploy:
+    runs-on: self-hosted   # <— roda no runner da sua VM
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
 
-    # apontar 'current' e ajustar permissões SOMENTE no /var/www
-    sudo ln -sfn "$RELEASE" /var/www/app/current
-    sudo chown -R www-data:www-data /var/www/app
+      - name: Use Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
-    sudo nginx -t
-    sudo systemctl reload nginx
+      - name: Install deps
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      # Copia o build para /var/www/app/releases/<sha> e troca symlink
+      - name: Deploy to Nginx folder
+        run: |
+          set -e
+          RELEASE=/var/www/app/releases/${GITHUB_SHA}
+          sudo mkdir -p "$RELEASE"
+          sudo cp -r ./dist/* "$RELEASE"/ || sudo cp -r ./build/* "$RELEASE"/ || true
+          # SPA típicas: Vite => dist, CRA => build. O comando acima cobre ambos.
+
+          # Symlink atômico
+          sudo ln -sfn "$RELEASE" /var/www/app/current
+
+          # Permissões (opcional)
+          sudo chown -R www-data:www-data /var/www/app
+
+      - name: Reload Nginx
+        run: sudo systemctl reload nginx
