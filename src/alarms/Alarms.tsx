@@ -334,8 +334,8 @@ export default function Alarms() {
   const [activeGk, setActiveGk] = useState<string | null>(null); // groupKey ativo
   const [draftComment, setDraftComment] = useState("");
   const [draftStatus, setDraftStatus] = useState<AlarmStatus>("nao_tratado");
-  const [commentList, setCommentList] = useState<CommentEntry[]>([]);
-  const [statusLog, setStatusLog] = useState<StatusEntry[]>([]);
+  const [, setCommentList] = useState<CommentEntry[]>([]);
+  const [, setStatusLog] = useState<StatusEntry[]>([]);
   const [unifiedHistory, setUnifiedHistory] = useState<UnifiedHistEntry[]>([]);
 
   // computedStatus considerando reconhecido/descartado do "representante"
@@ -377,7 +377,9 @@ export default function Alarms() {
     setCommentList(updated);
 
     // atualiza histórico unificado (mantém ordenação por ts)
-    setUnifiedHistory((h) => [...h, { ts: Date.now(), kind: "comment", text }].sort((a, b) => a.ts - b.ts));
+  setUnifiedHistory((h) =>
+  [...h, { ts: Date.now(), kind: "comment" as const, text }].sort((a, b) => a.ts - b.ts)
+);
 
     // promove status (respeitando concluído)
     setStatuses((p) => {
@@ -390,7 +392,9 @@ export default function Alarms() {
       setStatusLog(log);
 
       // também adiciona ao histórico unificado a mudança de status
-      setUnifiedHistory((h) => [...h, { ts: se.ts, kind: "status", text: statusToText(se) }].sort((a, b) => a.ts - b.ts));
+     setUnifiedHistory((h) =>
+  [...h, { ts: se.ts, kind: "status" as const, text: statusToText(se) }].sort((a, b) => a.ts - b.ts)
+);
 
       // tenta persistir em backend usando um Row representativo do grupo
       try {
@@ -1254,7 +1258,9 @@ export default function Alarms() {
                       setStatuses((p) => ({ ...p, [activeGk]: v }));
 
                       // adiciona ao histórico unificado
-                      setUnifiedHistory((h) => [...h, { ts: se.ts, kind: "status", text: statusToText(se) }].sort((a, b) => a.ts - b.ts));
+                      setUnifiedHistory((h) =>
+                        [...h, { ts: se.ts, kind: "status" as const, text: statusToText(se) }].sort((a, b) => a.ts - b.ts)
+                      );
 
                       // Persistência condicional (sem comentário aqui)
                       try {
