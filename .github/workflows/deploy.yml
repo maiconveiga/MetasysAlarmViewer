@@ -47,26 +47,26 @@ jobs:
       # - name: Build
       #   run: npm run build
 
-      # 6) Deploy atômico para Nginx
-      - name: Deploy to Nginx folder
-        run: |
-          set -e
-          RELEASE=/var/www/app/releases/${GITHUB_SHA}
-          sudo mkdir -p "$RELEASE"
-          # SPA: Vite => dist; CRA => build
-          if [ -d "./dist" ]; then
-            sudo cp -r ./dist/* "$RELEASE"/
-          elif [ -d "./build" ]; then
-            sudo cp -r ./build/* "$RELEASE"/
-          else
-            echo "Nenhuma pasta dist/build encontrada"; exit 1
-          fi
+      # # 6) Deploy atômico para Nginx
+      # - name: Deploy to Nginx folder
+      #   run: |
+      #     set -e
+      #     RELEASE=/var/www/app/releases/${GITHUB_SHA}
+      #     sudo mkdir -p "$RELEASE"
+      #     # SPA: Vite => dist; CRA => build
+      #     if [ -d "./dist" ]; then
+      #       sudo cp -r ./dist/* "$RELEASE"/
+      #     elif [ -d "./build" ]; then
+      #       sudo cp -r ./build/* "$RELEASE"/
+      #     else
+      #       echo "Nenhuma pasta dist/build encontrada"; exit 1
+      #     fi
 
-          # Symlink atômico
-          sudo ln -sfn "$RELEASE" /var/www/app/current
+      #     # Symlink atômico
+      #     sudo ln -sfn "$RELEASE" /var/www/app/current
 
-          # Permissões (opcional)
-          sudo chown -R www-data:www-data /var/www/app
+      #     # Permissões (opcional)
+      #     sudo chown -R www-data:www-data /var/www/app
 
       # # 7) Reload Nginx
       # - name: Reload Nginx
