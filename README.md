@@ -51,3 +51,5 @@ src/
    git clone https://github.com/maiconveiga/MetasysAlarmViewer.git
    cd MAV
 ### sudo pm2 start "npm run dev -- --host 0.0.0.0 --port 80" --name MAV
+### sudo pm2 serve dist 81 --name MAV
+

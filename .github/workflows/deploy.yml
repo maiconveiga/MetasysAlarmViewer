@@ -43,9 +43,9 @@ jobs:
       - name: Install deps
         run: npm ci
 
-      # 5) Build
-      - name: Build
-        run: npm run build
+      # # 5) Build
+      # - name: Build
+      #   run: npm run build
 
       # 6) Deploy atômico para Nginx
       - name: Deploy to Nginx folder
@@ -68,6 +68,6 @@ jobs:
           # Permissões (opcional)
           sudo chown -R www-data:www-data /var/www/app
 
-      # 7) Reload Nginx
-      - name: Reload Nginx
-        run: sudo systemctl reload nginx
+      # # 7) Reload Nginx
+      # - name: Reload Nginx
+      #   run: sudo systemctl reload nginx
