@@ -54,12 +54,8 @@ src/
 ## Levantar servidores
 ## Front
 ```bash
-pm2 start "npm run dev -- --host 0.0.0.0 --port 80" --name MAV80
+pm2 start "npm run dev -- --host 0.0.0.0 --port 5173" --name MAV
 ```
-```bash
-pm2 start "npm run dev" --name MAV5173
-```
-
 ## Back - API Manager
 ```bash
 python3 -m venv env_API_Manager
