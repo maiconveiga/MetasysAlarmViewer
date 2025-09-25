@@ -1,76 +1,3 @@
-# # .github/workflows/deploy.yml
-# name: Build & Deploy to Local VM
-
-# on:
-#   push:
-#     branches: [ "main" ]
-
-# jobs:
-#   build-deploy:
-#     runs-on: self-hosted
-
-#     steps:
-#       # 0) Corrige permissões do workspace ANTES do checkout
-#       - name: Fix workspace permissions
-#         run: |
-#           # Quem sou eu?
-#           echo "Runner user: $(whoami)"
-#           # Corrige owner do diretório do job
-#           sudo chown -R "$USER":"$USER" "$GITHUB_WORKSPACE" || true
-#           # (opcional) remove caches problemáticos do Vite de runs anteriores
-#           rm -rf "$GITHUB_WORKSPACE/node_modules/.vite" || true
-
-#       # 1) Checkout sem limpeza automática (evita EACCES do checkout)
-#       - name: Check out
-#         uses: actions/checkout@v4
-#         with:
-#           clean: false   # <— importante
-
-#       # 2) Limpeza manual segura (com o mesmo usuário do runner)
-#       - name: Clean previous artifacts (safe)
-#         run: |
-#           rm -rf node_modules/.vite || true
-#           rm -rf dist build || true
-
-#       # 3) Node + cache
-#       - name: Use Node 20
-#         uses: actions/setup-node@v4
-#         with:
-#           node-version: '20'
-#           cache: 'npm'
-
-#       # 4) Instalação SEM sudo (mantém permissões corretas)
-#       - name: Install deps
-#         run: npm ci
-
-#       # # 5) Build
-#       # - name: Build
-#       #   run: npm run build
-
-#       # # 6) Deploy atômico para Nginx
-#       # - name: Deploy to Nginx folder
-#       #   run: |
-#       #     set -e
-#       #     RELEASE=/var/www/app/releases/${GITHUB_SHA}
-#       #     sudo mkdir -p "$RELEASE"
-#       #     # SPA: Vite => dist; CRA => build
-#       #     if [ -d "./dist" ]; then
-#       #       sudo cp -r ./dist/* "$RELEASE"/
-#       #     elif [ -d "./build" ]; then
-#       #       sudo cp -r ./build/* "$RELEASE"/
-#       #     else
-#       #       echo "Nenhuma pasta dist/build encontrada"; exit 1
-#       #     fi
-
-#       #     # Symlink atômico
-#       #     sudo ln -sfn "$RELEASE" /var/www/app/current
-
-#       #     # Permissões (opcional)
-#       #     sudo chown -R www-data:www-data /var/www/app
-
-#       # # 7) Reload Nginx
-#       # - name: Reload Nginx
-#       #   run: sudo systemctl reload nginx
 # .github/workflows/deploy.yml
 name: Build & Deploy to Local VM
 
@@ -82,35 +9,65 @@ jobs:
   build-deploy:
     runs-on: self-hosted
 
-    defaults:
-      run:
-        working-directory: MetasysAlarmViewer/MetasysAlarmViewer   # << ajuste o dir do projeto
-
     steps:
+      # 0) Corrige permissões do workspace ANTES do checkout
+      - name: Fix workspace permissions
+        run: |
+          # Quem sou eu?
+          echo "Runner user: $(whoami)"
+          # Corrige owner do diretório do job
+          sudo chown -R "$USER":"$USER" "$GITHUB_WORKSPACE" || true
+          # (opcional) remove caches problemáticos do Vite de runs anteriores
+          rm -rf "$GITHUB_WORKSPACE/node_modules/.vite" || true
+
+      # 1) Checkout sem limpeza automática (evita EACCES do checkout)
       - name: Check out
         uses: actions/checkout@v4
         with:
-          clean: false
+          clean: false   # <— importante
 
-      - name: Fix ownership and clean caches
+      # 2) Limpeza manual segura (com o mesmo usuário do runner)
+      - name: Clean previous artifacts (safe)
         run: |
-          # tudo com o usuário do runner (sem sudo)
-          chown -R "$(id -u)":"$(id -g)" "$GITHUB_WORKSPACE"
-          rm -rf node_modules .vite .cache || true
-          mkdir -p "$HOME/.npm"
-          npm config set cache "$HOME/.npm" --global
+          rm -rf node_modules/.vite || true
+          rm -rf dist build || true
 
+      # 3) Node + cache
       - name: Use Node 20
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
 
+      # 4) Instalação SEM sudo (mantém permissões corretas)
       - name: Install deps
-        env:
-          CI: "true"
         run: npm ci
 
+      # # 5) Build
       # - name: Build
       #   run: npm run build
+
+      # # 6) Deploy atômico para Nginx
+      # - name: Deploy to Nginx folder
+      #   run: |
+      #     set -e
+      #     RELEASE=/var/www/app/releases/${GITHUB_SHA}
+      #     sudo mkdir -p "$RELEASE"
+      #     # SPA: Vite => dist; CRA => build
+      #     if [ -d "./dist" ]; then
+      #       sudo cp -r ./dist/* "$RELEASE"/
+      #     elif [ -d "./build" ]; then
+      #       sudo cp -r ./build/* "$RELEASE"/
+      #     else
+      #       echo "Nenhuma pasta dist/build encontrada"; exit 1
+      #     fi
+
+      #     # Symlink atômico
+      #     sudo ln -sfn "$RELEASE" /var/www/app/current
+
+      #     # Permissões (opcional)
+      #     sudo chown -R www-data:www-data /var/www/app
+
+      # # 7) Reload Nginx
+      # - name: Reload Nginx
+      #   run: sudo systemctl reload nginx
