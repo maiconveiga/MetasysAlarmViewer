@@ -49,9 +49,15 @@ src/
 1. **Clonar ou copiar o projeto** para a máquina desejada:
    ```bash
    git clone https://github.com/maiconveiga/MetasysAlarmViewer.git
-   cd MAV
-### sudo pm2 start "npm run dev -- --host 0.0.0.0 --port 80" --name MAV
-### sudo pm2 start "npm run dev" --name MAV
-### sudo pm2 serve dist 81 --name MAV
 
-pm2 start ./env_API_Manager/bin/python --name api_manager --cwd /home/ghrunner/actions-runner/_work/MetasysAlarmViewer/MS_API_Manager/01_MS_API_MANAGER --interpreter none --  -m uvicorn app.main:app --host 0.0.0.0 --port 5000 
+### Levantar servidores
+## Front
+# pm2 start "npm run dev -- --host 0.0.0.0 --port 80" --name MAV80
+# pm2 start "npm run dev" --name MAV5173
+# pm2 serve dist 81 --name MAV
+
+## Back - API Manager
+# python3 -m venv env_API_Manager
+# source env_API_Manager/bin/activate
+# pip3 install -r requirements.txt
+# pm2 start ./env_API_Manager/bin/python --name MAV_API_MANAGER --cwd /home/ghrunner/actions-runner/_work/MetasysAlarmViewer/01_MS_API_MANAGER --interpreter none --  -m uvicorn app.main:app --host 0.0.0.0 --port 5000 
