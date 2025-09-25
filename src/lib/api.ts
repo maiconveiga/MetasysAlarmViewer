@@ -37,6 +37,7 @@ export function normalizeValue(v: unknown): string {
     "unitEnumSet.kilopascals" : "kPa",
     "unitEnumSet.kilowatts" : "kW",
     "unitEnumSet.jaKilogramsPerSqCm" : "kg/m²",
+    "unitEnumSet.millimetersPerSecond" : "mm/s.",
     
     
   };
@@ -75,6 +76,8 @@ export function mapUnit(u?: string): string | undefined {
     "unitEnumSet.kilopascals" : "kPa",
     "unitEnumSet.kilowatts" : "kW",
     "unitEnumSet.jaKilogramsPerSqCm" : "kg/m²",
+    "unitEnumSet.millimetersPerSecond" : "mm/s.",
+    
     
   };
   return map[u] ?? u; // fallback para não quebrar nada
