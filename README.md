@@ -50,7 +50,9 @@ src/
    ```bash
    git clone https://github.com/maiconveiga/MetasysAlarmViewer.git
    ```
-
+   ```bash
+   git clone https://github.com/maiconveiga/01_MS_API_MANAGER.git
+   ```
 ## Levantar servidores
 ## Front
 ```bash
