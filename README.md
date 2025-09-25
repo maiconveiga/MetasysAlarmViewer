@@ -54,3 +54,4 @@ src/
 ### sudo pm2 start "npm run dev" --name MAV
 ### sudo pm2 serve dist 81 --name MAV
 
+pm2 start ./env_API_Manager/bin/python --name api_manager --cwd /home/ghrunner/actions-runner/_work/MetasysAlarmViewer/MS_API_Manager/01_MS_API_MANAGER --interpreter none --  -m uvicorn app.main:app --host 0.0.0.0 --port 5000 
