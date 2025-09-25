@@ -3,7 +3,7 @@ import "./Alarms.css";
 import { normalizeValue, mapUnit, formatDateWithOffset, type AlarmDTO } from "../lib/api";
 import { FiRefreshCcw, FiSettings, FiLayout, FiChevronUp, FiChevronDown, FiXCircle, FiAlertTriangle } from "react-icons/fi";
 
-const API_HOST = "http://127.0.0.1:8000";
+const API_HOST = "http://10.2.1.133:5000";
 
 type ApiItem = {
   id: number;

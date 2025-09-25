@@ -17,22 +17,69 @@ export type AlarmDTO = {
 export type AlarmsResponse = { total: number; items: AlarmDTO[] };
 
 // Helpers de valor/unidade (mínimos necessários para a UI)
-export function normalizeValue(value?: string | number, units?: string): string {
-  if (value === undefined || value === null) return '';
-  const v = typeof value === 'number' ? value : String(value).trim();
-  const u = (units ?? '').trim();
-  return u ? `${v} ${u}` : String(v);
+export function normalizeValue(v: unknown): string {
+  if (v == null) return "-";
+  const s = String(v).trim();
+
+  // mapeamentos diretos
+  const direct: Record<string, string> = {
+    "controllerStatusEnumSet.csOffline": "Offline",
+    "controllerStatusEnumSet.csOnline": "Online",
+    "batteryConditionEnumSet.bcBatteryService": "BatteryService",
+    "normalAlarmEnumSet.naAlarm": "Alarm",
+    "localremoteEnumSet.1" : "LR - 1",
+    "localremoteEnumSet.0" : "LR - 0",
+    "offAutoEnumSet.0" : "Estado - 0",
+    "offAutoEnumSet.1" : "Estado - 1",
+    "unitEnumSet.noUnits" : "",
+    "normalAlarm2EnumSet.na2Alarm" : "Alarm",
+    "normalAlarm2EnumSet.na2Normal" : "Normal",
+    "unitEnumSet.kilopascals" : "kPa",
+    "unitEnumSet.kilowatts" : "kW",
+    "unitEnumSet.jaKilogramsPerSqCm" : "kg/m²",
+    
+    
+  };
+  if (direct[s]) return direct[s];
+
+  // off/on com sufixo numérico
+  // ex.: "offonEnumSet.0" => "Estado 0", "offonEnumSet.1" => "Estado 1"
+  if (s.startsWith("offonEnumSet.")) {
+    const code = s.split(".")[1];
+    if (code === "0") return "Estado 0";
+    if (code === "1") return "Estado 1";
+  }
+
+  return s; // fallback
 }
 
-export function mapUnit(units?: string): string {
-  if (!units) return '';
-  const m: Record<string, string> = {
-    'degC': '°C',
-    'degF': '°F',
-    'percent': '%'
+
+export function mapUnit(u?: string): string | undefined {
+  if (!u) return undefined;
+  const map: Record<string, string> = {
+    // seus pedidos
+    "unitEnumSet.noUnits" : "",
+    "unitEnumSet.degC": "°C",
+    "unitEnumSet.percent": "%",
+    "unitEnumSet.milligrams": "mg",
+    "unitEnumSet.perMinute": "perMinute",
+    // tolerância a variações (se vier sem prefixo)
+    "unitEnumSet.degF": "°F",
+    "percent": "%",
+    "milligrams": "milligrams",
+    "perMinute": "perMinute",
+    "localremoteEnumSet.0" : "LR - 0",
+    "localremoteEnumSet.1" : "LR - 1",
+    "normalAlarm2EnumSet.na2Alarm" : "Alarm",
+    "normalAlarm2EnumSet.na2Normal" : "Normal",
+    "unitEnumSet.kilopascals" : "kPa",
+    "unitEnumSet.kilowatts" : "kW",
+    "unitEnumSet.jaKilogramsPerSqCm" : "kg/m²",
+    
   };
-  return m[units] ?? units;
+  return map[u] ?? u; // fallback para não quebrar nada
 }
+
 
 // Datas
 export function formatDateUTCToLocal(iso: string): string {
