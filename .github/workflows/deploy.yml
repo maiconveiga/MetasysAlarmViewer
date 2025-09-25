@@ -2,15 +2,11 @@ name: Build & Deploy to Local VM
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build-deploy:
     runs-on: self-hosted
-
-    defaults:
-      run:
-        working-directory: MetasysAlarmViewer/MetasysAlarmViewer  # ajuste se for outro
 
     steps:
       - name: Check out
@@ -18,21 +14,31 @@ jobs:
         with:
           clean: false
 
-      - name: Hard clean workspace
+      - name: Debug path
         run: |
+          echo "WS=$GITHUB_WORKSPACE"
+          pwd
+          ls -la
+
+      - name: Fix perms & hard clean
+        run: |
+          sudo chown -R "$(id -u):$(id -g)" "$GITHUB_WORKSPACE" || true
           git reset --hard
-          git clean -fdx               # remove node_modules/.vite/dist/etc
+          git clean -fdx
           mkdir -p "$HOME/.npm"
           npm config set cache "$HOME/.npm" --global
 
       - name: Use Node 20
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: "package-lock.json"
 
       - name: Install deps
         env:
           CI: "true"
         run: npm ci
+
+      # - name: Build
+      #   run: npm run build
