@@ -71,3 +71,16 @@ pip3 install -r requirements.txt
 ```bash
 pm2 start ./env_API_Manager/bin/python --name MAV_API_MANAGER --cwd /home/ghrunner/actions-runner/_work/MetasysAlarmViewer/01_MS_API_MANAGER --interpreter none --  -m uvicorn app.main:app --host 0.0.0.0 --port 5000
 ```
+
+## Back - API Collector V3
+```bash
+python3 -m venv env
+```
+```bash
+source env/bin/activate
+```
+```bash
+pip3 install -r Requirements.txt
+```
+```bash
+ pm2 start ./env/bin/python --name MAV_API_COLLECTOR --cwd /home/ghrunner/actions-runner/_work/MetasysAlarmViewer/02_MS_API_COLLECTOR_V3 --interpreter none --  -m uvicorn app.main:app --host 0.0.0.0 --port 5003
